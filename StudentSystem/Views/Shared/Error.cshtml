@@ -1,0 +1,144 @@
+﻿@model ErrorViewModel
+@{
+    ViewData["Title"] = "Error";
+}
+
+<div class="error-container">
+    <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-6">
+            <div class="error-card">
+                <div class="error-icon">
+                    <i class="fas fa-exclamation-triangle"></i>
+                </div>
+                <h1 class="error-title">Oops! Something went wrong</h1>
+                <p class="error-message">
+                    We're sorry, but an unexpected error has occurred. Please try again later or contact support if the problem persists.
+                </p>
+
+                @if (Model.ShowRequestId)
+                {
+                    <div class="error-details">
+                        <p class="error-id">
+                            <strong>Request ID:</strong> <code>@Model.RequestId</code>
+                        </p>
+                    </div>
+                }
+
+                <div class="error-actions">
+                    <a href="@Url.Action("Index", "Home")" class="btn btn-primary">
+                        <i class="fas fa-home me-2"></i>Go to Dashboard
+                    </a>
+                    <button onclick="history.back()" class="btn btn-outline-secondary">
+                        <i class="fas fa-arrow-left me-2"></i>Go Back
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .error-container {
+        min-height: 60vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 2rem 0;
+    }
+
+    .error-card {
+        background: white;
+        border-radius: var(--border-radius);
+        box-shadow: var(--box-shadow);
+        padding: 3rem;
+        text-align: center;
+    }
+
+    .error-icon {
+        font-size: 4rem;
+        color: var(--warning-color);
+        margin-bottom: 2rem;
+    }
+
+    .error-title {
+        font-size: 2rem;
+        font-weight: 700;
+        color: var(--gray-800);
+        margin-bottom: 1rem;
+    }
+
+    .error-message {
+        font-size: 1.1rem;
+        color: var(--gray-600);
+        margin-bottom: 2rem;
+        line-height: 1.6;
+    }
+
+    .error-details {
+        background: var(--gray-100);
+        border-radius: 8px;
+        padding: 1rem;
+        margin-bottom: 2rem;
+    }
+
+    .error-id {
+        margin: 0;
+        font-size: 0.9rem;
+        color: var(--gray-700);
+    }
+
+    .error-actions {
+        display: flex;
+        gap: 1rem;
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+
+        .error-actions .btn {
+            padding: 0.75rem 2rem;
+            border-radius: var(--border-radius);
+            font-weight: 600;
+            transition: var(--transition);
+        }
+
+        .error-actions .btn-primary {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            border: none;
+        }
+
+            .error-actions .btn-primary:hover {
+                transform: translateY(-2px);
+                box-shadow: var(--box-shadow);
+            }
+
+        .error-actions .btn-outline-secondary {
+            border-color: var(--gray-300);
+            color: var(--gray-700);
+        }
+
+            .error-actions .btn-outline-secondary:hover {
+                background: var(--gray-100);
+                border-color: var(--gray-400);
+                color: var(--gray-800);
+            }
+
+    media(max-width:576px) {
+        .error-card{
+        padding: 2rem 1rem;
+    }
+            */
+
+    .error-title {
+        font-size: 1.5rem;
+    }
+
+    .error-actions {
+        flex-direction: column;
+    }
+
+        .error-actions .btn {
+            width: 100%;
+        }
+
+    }
+</style>

@@ -1,0 +1,425 @@
+﻿@model IEnumerable<StudentSystem.Models.Course>
+@using System.Security.Claims
+@{
+    ViewData["Title"] = "Course Management";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    var currentUserRole = ViewBag.CurrentUserRole as string;
+    var teachers = ViewBag.Teachers as IEnumerable<StudentSystem.Models.user>;
+}
+
+<div class="courses-container">
+    <div class="courses-header">
+        <div class="row align-items-center">
+            <div class="col">
+                <h1 class="courses-title">
+                    <i class="fas fa-book me-3"></i>
+                    @if (currentUserRole == "Admin")
+                    {
+                        <text>Course Management</text>
+                    }
+                    else if (currentUserRole == "Teacher")
+                    {
+                        <text>My Courses</text>
+                    }
+                    else
+                    {
+                        <text>My Enrolled Courses</text>
+                    }
+                </h1>
+                <p class="courses-subtitle">
+                    @if (currentUserRole == "Admin")
+                    {
+                        <text>Manage all courses, teachers, and enrollments</text>
+                    }
+                    else if (currentUserRole == "Teacher")
+                    {
+                        <text>View and manage your assigned courses</text>
+                    }
+                    else
+                    {
+                        <text>View your enrolled courses and progress</text>
+                    }
+                </p>
+            </div>
+            @if (currentUserRole == "Admin")
+            {
+                <div class="col-auto">
+                    <button type="button" class="btn btn-secondary create-btn" data-bs-toggle="modal" data-bs-target="#createCourseModal">
+                        <i class="fas fa-plus me-2"></i>Create New Course
+                    </button>
+                </div>
+            }
+        </div>
+    </div>
+
+    <div class="courses-card">
+        <div class="card-header">
+            <div class="row align-items-center">
+                <div class="col">
+                    <h5 class="card-title">
+                        <i class="fas fa-list me-2"></i>
+                        @if (currentUserRole == "Admin")
+                        {
+                            <text>All Courses</text>
+                        }
+                        else if (currentUserRole == "Teacher")
+                        {
+                            <text>Your Courses</text>
+                        }
+                        else
+                        {
+                            <text>Enrolled Courses</text>
+                        }
+                    </h5>
+                </div>
+                <div class="col-auto">
+                    <div class="search-box">
+                        <i class="fas fa-search"></i>
+                        <input type="text" class="form-control" id="courseSearch" placeholder="Search courses...">
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="card-body">
+            @if (Model.Any())
+            {
+                <div class="table-responsive">
+                    <table class="table courses-table">
+                        <thead>
+                            <tr>
+                                <th>
+                                    <i class="fas fa-book me-2"></i>Course Name
+                                </th>
+                                <th>
+                                    <i class="fas fa-chalkboard-teacher me-2"></i>Teacher
+                                </th>
+                                <th>
+                                    <i class="fas fa-info-circle me-2"></i>Status
+                                </th>
+                                <th>
+                                    <i class="fas fa-users me-2"></i>Students
+                                </th>
+                                @if (currentUserRole == "Student")
+                                {
+                                    <th>
+                                        <i class="fas fa-star me-2"></i>Grade
+                                    </th>
+                                }
+                                <th class="text-center">
+                                    <i class="fas fa-cogs me-2"></i>Actions
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var course in Model)
+                            {
+                                <tr class="course-row" data-course-id="@course.Id">
+                                    <td>
+                                        <div class="course-info">
+                                            <div class="course-icon">
+                                                <i class="fas fa-book-open"></i>
+                                            </div>
+                                            <div class="course-details">
+                                                <div class="course-name">@course.Name</div>
+                                                @if (!string.IsNullOrEmpty(course.Description))
+                                                {
+                                                    <div class="course-description">@course.Description</div>
+                                                }
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="teacher-info">
+                                            <div class="teacher-avatar">
+                                                @(course.Teacher.FirstName.Substring(0, 1).ToUpper())@(course.Teacher.LastName.Substring(0, 1).ToUpper())
+                                            </div>
+                                            <div class="teacher-details">
+                                                <div class="teacher-name">@course.Teacher.FirstName @course.Teacher.LastName</div>
+                                                @if (!string.IsNullOrEmpty(course.Teacher.TeacherSubject))
+                                                {
+                                                    <div class="teacher-subject">@course.Teacher.TeacherSubject</div>
+                                                }
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <span class="badge status-badge bg-@(course.Status == StudentSystem.Models.Enums.Status.Started ? "success" : course.Status == StudentSystem.Models.Enums.Status.Waiting ? "warning" : "secondary")">
+                                            <i class="fas fa-@(course.Status == StudentSystem.Models.Enums.Status.Started ? "play" : course.Status == StudentSystem.Models.Enums.Status.Waiting ? "clock" : "stop") me-1"></i>
+                                            @course.Status
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <div class="student-count">
+                                            <i class="fas fa-users me-1"></i>
+                                            <span class="count-number">@course.Enrollments.Count</span>
+                                            <span class="count-label">students</span>
+                                        </div>
+                                    </td>
+                                    @if (currentUserRole == "Student")
+                                    {
+                                        <td>
+                                            @{
+                                                var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+                                                var enrollment = course.Enrollments.FirstOrDefault(e => e.StudentId == userId);
+                                            
+                                            }
+                                            @if (enrollment?.Grade.HasValue == true)
+                                            {
+                                                <span class="badge grade-badge bg-@(enrollment.Grade >= 90 ? "success" : enrollment.Grade >= 70 ? "warning" : "danger")">
+                                                    @enrollment.Grade.Value
+                                                </span>
+                                            }
+                                            else
+                                            {
+                                                <span class="badge bg-secondary">Not Graded</span>
+                                            }
+                                        </td>
+                                    }
+                                    <td class="text-center">
+                                        <div class="action-buttons">
+                                            <a href="@Url.Action("Details", "Courses", new { id = course.Id })"
+                                               class="btn btn-sm btn-outline-primary details-btn">
+                                                <i class="fas fa-eye"></i>
+                                            </a>
+                                            @if (currentUserRole == "Admin")
+                                            {
+                                                <button type="button" class="btn btn-sm btn-outline-danger delete-btn"
+                                                        data-course-id="@course.Id"
+                                                        data-course-name="@course.Name"
+                                                        data-bs-toggle="modal"
+                                                        data-bs-target="#deleteCourseModal">
+                                                    <i class="fas fa-trash"></i>
+                                                </button>
+                                            }
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+            else
+            {
+                <div class="empty-state">
+                    <div class="empty-icon">
+                        <i class="fas fa-book-open"></i>
+                    </div>
+                    <h4>
+                        @if (currentUserRole == "Admin")
+                        {
+                            <text>No Courses Found</text>
+                        }
+                        else if (currentUserRole == "Teacher")
+                        {
+                            <text>No Courses Assigned</text>
+                        }
+                        else
+                        {
+                            <text>No Courses Enrolled</text>
+                        }
+                    </h4>
+                    <p>
+                        @if (currentUserRole == "Admin")
+                        {
+                            <text>Start by creating your first course.</text>
+                        }
+                        else if (currentUserRole == "Teacher")
+                        {
+                            <text>Contact your administrator to get courses assigned.</text>
+                        }
+                        else
+                        {
+                            <text>Contact your administrator to enroll in courses.</text>
+                        }
+                    </p>
+                    @if (currentUserRole == "Admin")
+                    {
+                        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#createCourseModal">
+                            <i class="fas fa-plus me-2"></i>Create First Course
+                        </button>
+                    }
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+@if (currentUserRole == "Admin")
+{
+    <div class="modal fade" id="createCourseModal" tabindex="-1" aria-labelledby="createCourseModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="createCourseModalLabel">
+                        <i class="fas fa-plus me-2"></i>Create New Course
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form id="createCourseForm" asp-action="CreateCourse" asp-controller="Courses" method="post">
+                    <div class="modal-body">
+                        <div class="row g-3">
+                            <div class="col-12">
+                                <div class="form-floating">
+                                    <input type="text" class="form-control" id="courseName" name="Name" placeholder="Course Name" required>
+                                    <label for="courseName">
+                                        <i class="fas fa-book me-2"></i>Course Name
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <div class="form-floating">
+                                    <textarea class="form-control" id="courseDescription" name="Description" placeholder="Course Description" style="height: 100px;"></textarea>
+                                    <label for="courseDescription">
+                                        <i class="fas fa-align-left me-2"></i>Course Description
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-floating">
+                                    <select class="form-select" id="teacherId" name="TeacherId" required>
+                                        <option value="">Select Teacher</option>
+                                        @if (teachers != null)
+                                        {
+                                            @foreach (var teacher in teachers)
+                                            {
+                                                <option value="@teacher.Id">
+                                                    @teacher.FirstName @teacher.LastName
+                                                    @if (!string.IsNullOrEmpty(teacher.TeacherSubject))
+                                                    {
+                                                        <text> - @teacher.TeacherSubject</text>
+                                                    }
+                                                </option>
+                                            }
+                                        }
+                                    </select>
+                                    <label for="teacherId">
+                                        <i class="fas fa-chalkboard-teacher me-2"></i>Assign Teacher
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-floating">
+                                    <select class="form-select" id="courseStatus" name="Status" required>
+                                        <option value="">Select Status</option>
+                                        <option value="0">Started</option>
+                                        <option value="1">Waiting</option>
+                                        <option value="2">Finished</option>
+                                    </select>
+                                    <label for="courseStatus">
+                                        <i class="fas fa-info-circle me-2"></i>Course Status
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                            <i class="fas fa-times me-2"></i>Cancel
+                        </button>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-plus me-2"></i>Create Course
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="deleteCourseModal" tabindex="-1" aria-labelledby="deleteCourseModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title text-danger" id="deleteCourseModalLabel">
+                        <i class="fas fa-exclamation-triangle me-2"></i>Confirm Deletion
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="alert alert-warning">
+                        <i class="fas fa-exclamation-triangle me-2"></i>
+                        <strong>Warning!</strong> This action cannot be undone.
+                    </div>
+                    <p>Are you sure you want to delete the course <strong id="deleteCourseName"></strong>?</p>
+                    <p class="text-muted">This will permanently remove the course and all associated enrollments and grades.</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                        <i class="fas fa-times me-2"></i>Cancel
+                    </button>
+                    <form id="deleteCourseForm" method="post" style="display: inline;">
+                        <button type="submit" class="btn btn-danger">
+                            <i class="fas fa-trash me-2"></i>Delete Course
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+
+<script>
+    document.getElementById('courseSearch').addEventListener('input', function() {
+        const searchTerm = this.value.toLowerCase();
+        const rows = document.querySelectorAll('.course-row');
+
+        rows.forEach(row => {
+            const text = row.textContent.toLowerCase();
+            if (text.includes(searchTerm)) {
+                row.style.display = '';
+            } else {
+                row.style.display = 'none';
+            }
+        });
+    });
+
+    document.addEventListener('DOMContentLoaded', function() {
+        const deleteButtons = document.querySelectorAll('.delete-btn');
+        const deleteModal = document.getElementById('deleteCourseModal');
+        const deleteForm = document.getElementById('deleteCourseForm');
+        const deleteCourseName = document.getElementById('deleteCourseName');
+
+        if (deleteButtons.length > 0) {
+            deleteButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    const courseId = this.getAttribute('data-course-id');
+                    const courseName = this.getAttribute('data-course-name');
+
+                    deleteCourseName.textContent = courseName;
+                    deleteForm.action = `/Courses/Delete/${courseId}`;
+                });
+            });
+        }
+    });
+
+    const createCourseForm = document.getElementById('createCourseForm');
+    if (createCourseForm) {
+        createCourseForm.addEventListener('submit', function(e) {
+            const courseName = document.getElementById('courseName').value.trim();
+            const teacherId = document.getElementById('teacherId').value;
+            const courseStatus = document.getElementById('courseStatus').value;
+
+            if (!courseName) {
+                e.preventDefault();
+                alert('Please enter a course name.');
+                document.getElementById('courseName').focus();
+                return;
+            }
+
+            if (!teacherId) {
+                e.preventDefault();
+                alert('Please select a teacher for the course.');
+                document.getElementById('teacherId').focus();
+                return;
+            }
+
+            if (!courseStatus) {
+                e.preventDefault();
+                alert('Please select a course status.');
+                document.getElementById('courseStatus').focus();
+                return;
+            }
+        });
+    }
+</script>

@@ -1,0 +1,123 @@
+﻿@model StudentSystem.ViewModels.EditUserViewModel
+@{
+    ViewData["Title"] = "Edit User";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="admin-container">
+    <h1 class="admin-title">
+        <i class="fas fa-user-edit me-3"></i>Edit User
+    </h1>
+    <p class="admin-subtitle">Update user details and role</p>
+
+    <div class="users-card">
+        <div class="card-body">
+            <form asp-action="Edit" asp-controller="Admin" method="post">
+                <input type="hidden" asp-for="Id" />
+                @if (!ViewData.ModelState.IsValid)
+                {
+                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                        @foreach (var error in ViewData.ModelState.Values.SelectMany(v => v.Errors))
+                        {
+                            <p>@error.ErrorMessage</p>
+                        }
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                }
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <div class="form-floating">
+                            <input asp-for="FirstName" class="form-control" required />
+                            <label for="FirstName">
+                                <i class="fas fa-user me-2"></i>First Name
+                            </label>
+                            <span asp-validation-for="FirstName" class="text-danger"></span>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-floating">
+                            <input asp-for="LastName" class="form-control" required />
+                            <label for="LastName">
+                                <i class="fas fa-user me-2"></i>Last Name
+                            </label>
+                            <span asp-validation-for="LastName" class="text-danger"></span>
+                        </div>
+                    </div>
+                    <div class="col-12">
+                        <div class="form-floating">
+                            <input asp-for="Email" class="form-control" required />
+                            <label for="Email">
+                                <i class="fas fa-envelope me-2"></i>Email Address
+                            </label>
+                            <span asp-validation-for="Email" class="text-danger"></span>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-floating">
+                            <select asp-for="Role" class="form-select" required onchange="toggleTeacherSubject()">
+                                <option value="">Select Role</option>
+                                <option value="Admin">Admin</option>
+                                <option value="Teacher">Teacher</option>
+                                <option value="Student">Student</option>
+                            </select>
+                            <label for="Role">
+                                <i class="fas fa-user-tag me-2"></i>Role
+                            </label>
+                            <span asp-validation-for="Role" class="text-danger"></span>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-floating">
+                            <select asp-for="Gender" class="form-select">
+                                <option value="">Select Gender</option>
+                                <option value="Male">Male</option>
+                                <option value="Female">Female</option>
+                            </select>
+                            <label for="Gender">
+                                <i class="fas fa-venus-mars me-2"></i>Gender
+                            </label>
+                            <span asp-validation-for="Gender" class="text-danger"></span>
+                        </div>
+                    </div>
+                    <div class="col-12" id="teacherSubjectField" style="display: @(Model.Role == "Teacher" ? "block" : "none");">
+                        <div class="form-floating">
+                            <input asp-for="TeacherSubject" class="form-control" />
+                            <label for="TeacherSubject">
+                                <i class="fas fa-chalkboard-teacher me-2"></i>Teaching Subject
+                            </label>
+                            <span asp-validation-for="TeacherSubject" class="text-danger"></span>
+                        </div>
+                    </div>
+                </div>
+                <div class="mt-3">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-save me-2"></i>Save Changes
+                    </button>
+                    <a asp-action="Index" class="btn btn-secondary">
+                        <i class="fas fa-times me-2"></i>Cancel
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        function toggleTeacherSubject() {
+            const roleSelect = document.getElementById('Role');
+            const subjectField = document.getElementById('teacherSubjectField');
+            const subjectInput = document.getElementById('TeacherSubject');
+
+            if (roleSelect.value === 'Teacher') {
+                subjectField.style.display = 'block';
+                subjectInput.required = true;
+            } else {
+                subjectField.style.display = 'none';
+                subjectInput.required = false;
+                subjectInput.value = '';
+            }
+        }
+    </script>
+}

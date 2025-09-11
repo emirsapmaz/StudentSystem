@@ -1,0 +1,623 @@
+﻿
+.courses-container {
+    padding: 2rem 0;
+}
+
+.courses-header, .admin-header, .dashboard-header {
+    margin-bottom: 2rem;
+    padding: 2rem;
+    background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+    border-radius: var(--border-radius);
+    color: white;
+}
+
+.courses-title, .admin-title, .dashboard-title {
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+}
+
+.courses-subtitle, .admin-subtitle, .dashboard-subtitle {
+    font-size: 1.1rem;
+    opacity: 0.9;
+    margin: 0;
+}
+
+.create-btn {
+    background: rgba(255, 255, 255, 0.2);
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    color: white;
+    padding: 0.75rem 2rem;
+    border-radius: 50px;
+    font-weight: 600;
+    transition: var(--transition);
+    backdrop-filter: blur(10px);
+}
+
+    .create-btn:hover {
+        background: white;
+        color: var(--primary-color);
+        transform: translateY(-2px);
+        box-shadow: var(--box-shadow);
+    }
+
+.courses-card, .users-card, .dashboard-card {
+    background: white;
+    border-radius: var(--border-radius);
+    box-shadow: var(--box-shadow);
+    border: none;
+    overflow: hidden;
+}
+
+    .courses-card .card-header,
+    .users-card .card-header,
+    .dashboard-card .card-header {
+        background: var(--gray-100);
+        border-bottom: 1px solid var(--gray-200);
+        padding: 1.5rem;
+    }
+
+    .courses-card .card-title,
+    .users-card .card-title,
+    .dashboard-card .card-title {
+        margin: 0;
+        font-weight: 600;
+        color: var(--gray-800);
+    }
+
+    .dashboard-card .card-body {
+        padding: 1.5rem;
+    }
+
+.search-box {
+    position: relative;
+    width: 300px;
+}
+
+    .search-box i {
+        position: absolute;
+        left: 15px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: var(--gray-400);
+        z-index: 10;
+    }
+
+    .search-box .form-control {
+        padding-left: 45px;
+        border: 2px solid var(--gray-200);
+        border-radius: 25px;
+        transition: var(--transition);
+    }
+
+        .search-box .form-control:focus {
+            border-color: var(--success-color);
+            box-shadow: 0 0 0 0.2rem rgba(16, 185, 129, 0.15);
+        }
+
+/*admin search*/
+.admin-container .search-box .form-control:focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 0.2rem rgba(79, 70, 229, 0.15);
+}
+
+.courses-table, .users-table {
+    margin: 0;
+}
+
+    .courses-table thead th,
+    .users-table thead th {
+        background: var(--gray-100);
+        border: none;
+        font-weight: 600;
+        color: var(--gray-700);
+        padding: 1rem;
+        border-bottom: 2px solid var(--gray-200);
+    }
+
+    .courses-table tbody tr,
+    .users-table tbody tr {
+        transition: var(--transition);
+        border-bottom: 1px solid var(--gray-200);
+    }
+
+        .courses-table tbody tr:hover,
+        .users-table tbody tr:hover {
+            background: var(--gray-100);
+            transform: scale(1.01);
+        }
+
+    .courses-table td,
+    .users-table td {
+        padding: 1rem;
+        vertical-align: middle;
+    }
+
+.course-info, .user-info {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.course-icon {
+    width: 45px;
+    height: 45px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+    border-radius: var(--border-radius);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 1.2rem;
+}
+
+.course-name, .user-name {
+    font-weight: 600;
+    color: var(--gray-800);
+    margin-bottom: 0.25rem;
+}
+
+.course-description {
+    color: var(--gray-600);
+    font-size: 0.9rem;
+    max-width: 200px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.teacher-info {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.teacher-avatar, .user-avatar {
+    width: 35px;
+    height: 35px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-weight: 600;
+    font-size: 0.8rem;
+}
+
+.user-avatar {
+    width: 45px;
+    height: 45px;
+    font-size: 0.9rem;
+}
+
+.teacher-name {
+    font-weight: 600;
+    color: var(--gray-800);
+    font-size: 0.9rem;
+}
+
+.teacher-subject {
+    color: var(--gray-600);
+    font-size: 0.8rem;
+}
+
+.user-email {
+    color: var(--gray-600);
+    font-family: 'Courier New', monospace;
+}
+
+.status-badge, .role-badge {
+    font-size: 0.85rem;
+    padding: 0.5rem 1rem;
+    border-radius: 50px;
+    font-weight: 600;
+}
+
+.student-count {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: var(--gray-600);
+}
+
+.count-number {
+    font-weight: 600;
+    color: var(--gray-800);
+}
+
+.count-label {
+    font-size: 0.9rem;
+}
+
+.grade-badge {
+    font-size: 0.9rem;
+    padding: 0.5rem 1rem;
+    border-radius: 50px;
+    font-weight: 600;
+}
+
+.gender-badge {
+    color: var(--gray-600);
+    font-size: 0.9rem;
+}
+
+.subject-badge {
+    background: var(--gray-100);
+    color: var(--gray-700);
+    padding: 0.25rem 0.75rem;
+    border-radius: 15px;
+    font-size: 0.8rem;
+    font-weight: 500;
+}
+
+.action-buttons {
+    display: flex;
+    gap: 0.5rem;
+    justify-content: center;
+}
+
+.details-btn, .delete-btn {
+    border-radius: 50%;
+    width: 35px;
+    height: 35px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: var(--transition);
+}
+
+    .details-btn:hover, .delete-btn:hover {
+        transform: scale(1.1);
+        box-shadow: var(--box-shadow);
+    }
+
+.empty-state {
+    text-align: center;
+    padding: 4rem 2rem;
+}
+
+.empty-icon {
+    font-size: 4rem;
+    color: var(--gray-400);
+    margin-bottom: 2rem;
+}
+
+.empty-state h4 {
+    color: var(--gray-700);
+    margin-bottom: 1rem;
+}
+
+.empty-state p {
+    color: var(--gray-500);
+    margin-bottom: 2rem;
+}
+
+/*modals*/
+.modal-content {
+    border: none;
+    border-radius: var(--border-radius);
+    box-shadow: var(--box-shadow);
+}
+
+.modal-header {
+    background: var(--gray-100);
+    border-bottom: 1px solid var(--gray-200);
+    border-radius: var(--border-radius) var(--border-radius) 0 0;
+}
+
+.modal-title {
+    font-weight: 600;
+    color: var(--gray-800);
+}
+
+.form-floating {
+    position: relative;
+    margin-bottom: 1rem;
+}
+
+    .form-floating > .form-control,
+    .form-floating > .form-select,
+    .form-floating > textarea {
+        border: 2px solid var(--gray-200);
+        border-radius: var(--border-radius);
+        font-size: 1rem;
+        transition: var(--transition);
+        background: var(--light-color);
+    }
+
+    .form-floating > .form-control,
+    .form-floating > .form-select {
+        height: 58px;
+    }
+
+        .form-floating > .form-control:focus,
+        .form-floating > .form-select:focus,
+        .form-floating > textarea:focus {
+            border-color: var(--success-color);
+            box-shadow: 0 0 0 0.2rem rgba(16, 185, 129, 0.15);
+            background: white;
+        }
+
+/*adminform*/
+.admin-container .form-floating > .form-control:focus,
+.admin-container .form-floating > .form-select:focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 0.2rem rgba(79, 70, 229, 0.15);
+}
+
+.form-floating > label {
+    color: var(--gray-600);
+    font-weight: 500;
+    padding: 1rem 0.75rem;
+}
+
+.form-floating > .form-control:focus ~ label,
+.form-floating > .form-control:not(:placeholder-shown) ~ label,
+.form-floating > .form-select:focus ~ label,
+.form-floating > .form-select:not([value=""]) ~ label,
+.form-floating > textarea:focus ~ label,
+.form-floating > textarea:not(:placeholder-shown) ~ label {
+    color: var(--success-color);
+    transform: scale(0.85) translateY(-0.5rem) translateX(0.15rem);
+}
+
+/*adminlabel*/
+.admin-container .form-floating > .form-control:focus ~ label,
+.admin-container .form-floating > .form-control:not(:placeholder-shown) ~ label,
+.admin-container .form-floating > .form-select:focus ~ label,
+.admin-container .form-floating > .form-select:not([value=""]) ~ label {
+    color: var(--primary-color);
+}
+
+.password-toggle {
+    position: absolute;
+    right: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    color: var(--gray-400);
+    cursor: pointer;
+    z-index: 10;
+    transition: var(--transition);
+}
+
+    .password-toggle:hover {
+        color: var(--primary-color);
+    }
+
+.modal-footer .btn {
+    padding: 0.75rem 2rem;
+    border-radius: var(--border-radius);
+    font-weight: 600;
+    transition: var(--transition);
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+    border: none;
+    transition: var(--transition);
+}
+
+    .btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: var(--box-shadow);
+        transition: var(--transition);
+    }
+
+.alert-warning {
+    background: rgba(245, 158, 11, 0.1);
+    border: 1px solid rgba(245, 158, 11, 0.2);
+    color: var(--warning-color);
+    border-radius: var(--border-radius);
+}
+
+/*dashboard*/
+.dashboard-container {
+    padding: 2rem 0;
+}
+
+.admin-container {
+    padding: 2rem 0;
+}
+
+.user-role-badge {
+    font-size: 1rem;
+    padding: 0.75rem 1.5rem;
+    border-radius: 50px;
+}
+
+.stats-grid {
+    margin-bottom: 2rem;
+}
+
+.stat-card {
+    background: white;
+    border-radius: var(--border-radius);
+    padding: 2rem;
+    box-shadow: var(--box-shadow);
+    transition: var(--transition);
+    border: none;
+    position: relative;
+    overflow: hidden;
+}
+
+    .stat-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 4px;
+        background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+    }
+
+    .stat-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.15);
+    }
+
+.stat-card-primary::before {
+    background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+}
+
+.stat-card-success::before {
+    background: linear-gradient(90deg, var(--success-color), #34d399);
+}
+
+.stat-card-info::before {
+    background: linear-gradient(90deg, var(--info-color), #60a5fa);
+}
+
+.stat-card-warning::before {
+    background: linear-gradient(90deg, var(--warning-color), #fbbf24);
+}
+
+.stat-icon {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    color: white;
+    margin-bottom: 1rem;
+    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+}
+
+.stat-number {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: var(--gray-800);
+    margin-bottom: 0.5rem;
+}
+
+.stat-label {
+    color: var(--gray-600);
+    font-size: 1rem;
+    margin: 0;
+}
+
+.overview-item {
+    display: flex;
+    align-items: center;
+    padding: 1rem;
+    background: var(--gray-100);
+    border-radius: 8px;
+    margin-bottom: 1rem;
+}
+
+.overview-icon {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    margin-right: 1rem;
+}
+
+.overview-content h6 {
+    margin: 0;
+    color: var(--gray-700);
+    font-size: 0.9rem;
+}
+
+.overview-number {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--gray-800);
+}
+
+.recent-item, .grade-item, .enrollment-item, .course-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1rem;
+    border-bottom: 1px solid var(--gray-200);
+    transition: var(--transition);
+}
+
+    .recent-item:hover, .grade-item:hover, .enrollment-item:hover, .course-item:hover {
+        background: var(--gray-100);
+    }
+
+    .recent-item:last-child, .grade-item:last-child, .enrollment-item:last-child, .course-item:last-child {
+        border-bottom: none;
+    }
+
+.recent-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: var(--primary-color);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    margin-right: 1rem;
+}
+
+.recent-content h6, .grade-info h6, .enrollment-info h6, .course-info h6 {
+    margin: 0;
+    font-size: 0.9rem;
+    color: var(--gray-800);
+}
+
+.recent-content p, .grade-info p, .enrollment-info p, .course-info p {
+    margin: 0;
+    font-size: 0.8rem;
+    color: var(--gray-600);
+}
+
+.attendance-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.75rem 0;
+    border-bottom: 1px solid var(--gray-200);
+}
+
+    .attendance-item:last-child {
+        border-bottom: none;
+    }
+
+.attendance-date {
+    color: var(--gray-700);
+    font-size: 0.9rem;
+}
+
+/* Media Queries */
+@media (max-width: 768px) {
+    .courses-header, .admin-header, .dashboard-header {
+        padding: 1.5rem;
+    }
+
+    .courses-title, .admin-title, .dashboard-title {
+        font-size: 2rem;
+    }
+
+    .search-box {
+        width: 100%;
+        margin-top: 1rem;
+    }
+
+    .courses-table, .users-table {
+        font-size: 0.9rem;
+    }
+
+    .course-info, .teacher-info, .user-info {
+        flex-direction: column;
+        text-align: center;
+        gap: 0.5rem;
+    }
+
+    .course-description {
+        max-width: none;
+        white-space: normal;
+    }
+}

@@ -1,0 +1,559 @@
+﻿@model StudentSystem.ViewModels.CourseViewModel
+@{
+    ViewData["Title"] = "Course Details";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <div>
+                    <h1 class="h3 mb-0">
+                        <i class="fas fa-book me-2"></i>@Model.Course.Name
+                    </h1>
+                    <p class="text-muted">@(Model.CurrentUserRole == "Admin" ? "Manage course details and enrollments" : Model.CurrentUserRole == "Teacher" ? "Manage grades, comments, and attendance" : "View your course details")</p>
+                </div>
+                <div class="d-flex gap-2">
+                    <span class="badge status-badge bg-@(Model.Course.Status == StudentSystem.Models.Enums.Status.Started ? "success" : Model.Course.Status == StudentSystem.Models.Enums.Status.Waiting ? "warning" : "secondary")">
+                        <i class="fas fa-@(Model.Course.Status == StudentSystem.Models.Enums.Status.Started ? "play" : Model.Course.Status == StudentSystem.Models.Enums.Status.Waiting ? "clock" : "stop") me-1"></i>
+                        @Model.Course.Status
+                    </span>
+                    @if (Model.CurrentUserRole == "Admin" || Model.CurrentUserRole == "Teacher")
+                    {
+                        <form asp-action="UpdateStatus" asp-controller="Courses" method="post">
+                            <input type="hidden" name="id" value="@Model.Course.Id" />
+                            <select name="status" class="form-select form-select-sm" onchange="this.form.submit()">
+                                <option value="">Update Status</option>
+                                <option value="@((int)StudentSystem.Models.Enums.Status.Started)">Started</option>
+                                <option value="@((int)StudentSystem.Models.Enums.Status.Waiting)">Waiting</option>
+                                <option value="@((int)StudentSystem.Models.Enums.Status.Finished)">Finished</option>
+                            </select>
+                        </form>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body">
+                    <h5 class="mb-3">
+                        <i class="fas fa-info-circle me-2"></i>Course Information
+                    </h5>
+                    <div class="row g-3">
+                        <div class="col-12">
+                            <div class="form-group">
+                                <label class="form-label text-muted small">Course Name</label>
+                                <div class="form-control-plaintext bg-light rounded p-2">
+                                    @Model.Course.Name
+                                </div>
+                            </div>
+                        </div>
+                        @if (!string.IsNullOrEmpty(Model.Course.Description))
+                        {
+                            <div class="col-12">
+                                <div class="form-group">
+                                    <label class="form-label text-muted small">Description</label>
+                                    <div class="form-control-plaintext bg-light rounded p-2">
+                                        @Model.Course.Description
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                        <div class="col-12">
+                            <div class="form-group">
+                                <label class="form-label text-muted small">Teacher</label>
+                                <div class="form-control-plaintext bg-light rounded p-2">
+                                    <i class="fas fa-chalkboard-teacher text-muted me-2"></i>
+                                    @Model.Course.Teacher.FirstName @Model.Course.Teacher.LastName
+                                    @if (!string.IsNullOrEmpty(Model.Course.Teacher.TeacherSubject))
+                                    {
+                                        <span class="text-muted"> - @Model.Course.Teacher.TeacherSubject</span>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- student view -->
+                    @if (Model.CurrentUserRole == "Student" && Model.UserEnrollment != null)
+                    {
+                        <hr class="my-4" />
+                        <h5 class="mb-3">
+                            <i class="fas fa-user-graduate me-2"></i>Your Enrollment
+                        </h5>
+                        <div class="row g-3">
+                            <div class="col-sm-6">
+                                <div class="form-group">
+                                    <label class="form-label text-muted small">Grade</label>
+                                    <div class="form-control-plaintext bg-light rounded p-2">
+                                        @if (Model.UserEnrollment.Grade.HasValue)
+                                        {
+                                            <span class="badge grade-badge bg-@(Model.UserEnrollment.Grade >= 90 ? "success" : Model.UserEnrollment.Grade >= 70 ? "warning" : "danger")">
+                                                @Model.UserEnrollment.Grade.Value
+                                            </span>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge bg-secondary">Not Graded</span>
+                                        }
+                                    </div>
+                                </div>
+                            </div>
+                            @if (!string.IsNullOrEmpty(Model.UserEnrollment.Comment))
+                            {
+                                <div class="col-12">
+                                    <div class="form-group">
+                                        <label class="form-label text-muted small">Teacher Comment</label>
+                                        <div class="form-control-plaintext bg-light rounded p-2">
+                                            @Model.UserEnrollment.Comment
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    }
+
+                    <!-- enrollment management -->
+                    @if (Model.CurrentUserRole == "Teacher" || Model.CurrentUserRole == "Admin")
+                    {
+                        <hr class="my-4" />
+                        <h5 class="mb-3">
+                            <i class="fas fa-users me-2"></i>Enrolled Students (@Model.Enrollments.Count)
+                        </h5>
+                        @if (Model.Enrollments.Any())
+                        {
+                            <div class="table-responsive">
+                                <table class="table">
+                                    <thead>
+                                        <tr>
+                                            <th>Student</th>
+                                            <th>Grade</th>
+                                            <th>Comment</th>
+                                            <th class="text-center">Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach (var enrollment in Model.Enrollments)
+                                        {
+                                            <tr>
+                                                <td>
+                                                    <div class="student-info">
+                                                        <div class="student-avatar">
+                                                            @(enrollment.Student.FirstName.Substring(0, 1).ToUpper())@(enrollment.Student.LastName.Substring(0, 1).ToUpper())
+                                                        </div>
+                                                        <div class="student-details">
+                                                            <div class="student-name">@enrollment.Student.FirstName @enrollment.Student.LastName</div>
+                                                        </div>
+                                                    </div>
+                                                </td>
+                                                <td>
+                                                    @if (enrollment.Grade.HasValue)
+                                                    {
+                                                        <span class="badge grade-badge bg-@(enrollment.Grade >= 90 ? "success" : enrollment.Grade >= 70 ? "warning" : "danger")">
+                                                            @enrollment.Grade.Value
+                                                        </span>
+                                                    }
+                                                    else
+                                                    {
+                                                        <span class="badge bg-secondary">Not Graded</span>
+                                                    }
+                                                </td>
+                                                <td>
+                                                    @if (!string.IsNullOrEmpty(enrollment.Comment))
+                                                    {
+                                                        <span class="text-muted">@enrollment.Comment</span>
+                                                    }
+                                                    else
+                                                    {
+                                                        <span class="text-muted">-</span>
+                                                    }
+                                                </td>
+                                                <td class="text-center">
+                                                    <div class="action-buttons">
+                                                        <button type="button" class="btn btn-sm btn-outline-primary grade-btn"
+                                                                data-bs-toggle="modal" data-bs-target="#gradeModal"
+                                                                data-student-id="@enrollment.StudentId"
+                                                                data-student-name="@(enrollment.Student.FirstName + " " + enrollment.Student.LastName)"
+                                                                data-current-grade="@(enrollment.Grade?.ToString() ?? "")">
+                                                            <i class="fas fa-star"></i>
+                                                        </button>
+                                                        <button type="button" class="btn btn-sm btn-outline-primary comment-btn"
+                                                                data-bs-toggle="modal" data-bs-target="#commentModal"
+                                                                data-student-id="@enrollment.StudentId"
+                                                                data-student-name="@(enrollment.Student.FirstName + " " + enrollment.Student.LastName)"
+                                                                data-current-comment="@enrollment.Comment">
+                                                            <i class="fas fa-comment"></i>
+                                                        </button>
+                                                        @if (Model.CurrentUserRole == "Admin")
+                                                        {
+                                                            <button type="button" class="btn btn-sm btn-outline-danger remove-btn"
+                                                                    data-bs-toggle="modal" data-bs-target="#removeStudentModal"
+                                                                    data-student-id="@enrollment.StudentId"
+                                                                    data-student-name="@(enrollment.Student.FirstName + " " + enrollment.Student.LastName)">
+                                                                <i class="fas fa-trash"></i>
+                                                            </button>
+                                                        }
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="empty-state">
+                                <div class="empty-icon">
+                                    <i class="fas fa-users"></i>
+                                </div>
+                                <h4>No Students Enrolled</h4>
+                                <p>Add students to this course to manage their grades and comments.</p>
+                            </div>
+                        }
+                    }
+
+                    @if (Model.AvailableStudents.Any())
+                    {
+                        @if (Model.CurrentUserRole == "Teacher" || Model.CurrentUserRole == "Admin"){
+
+                        <hr class="my-4" />
+                        <h5 class="mb-3">
+                            <i class="fas fa-user-plus me-2"></i>Add Student
+                        </h5>
+                        <form asp-action="AddStudent" asp-controller="Courses" method="post">
+                            <input type="hidden" name="courseId" value="@Model.Course.Id" />
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <div class="form-floating">
+                                        <select class="form-select" id="studentId" name="studentId" required>
+                                            <option value="">Select Student</option>
+                                            @foreach (var student in Model.AvailableStudents.Where(s => !Model.Enrollments.Any(e => e.StudentId == s.Id)))
+                                            {
+                                                <option value="@student.Id">@student.FirstName @student.LastName</option>
+                                            }
+                                        </select>
+                                        <label for="studentId">
+                                            <i class="fas fa-user-graduate me-2"></i>Student
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <button type="submit" class="btn btn-primary">
+                                        <i class="fas fa-user-plus me-2"></i>Add Student
+                                    </button>
+                                </div>
+                            </div>
+                        </form>
+                        }
+                    }
+
+                    <!-- attendance management -->
+                    <hr class="my-4" />
+                    <h5 class="mb-3">
+                        <i class="fas fa-calendar-check me-2"></i>Attendance
+                    </h5>
+                    @if (Model.Attendances.Any())
+                    {
+                        <div class="table-responsive">
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>Date</th>
+                                        <th>Students Present</th>
+                                        <th>Students Absent</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var group in Model.Attendances.GroupBy(a => a.Date))
+                                    {
+                                        <tr>
+                                            <td>@group.Key.ToShortDateString()</td>
+                                            <td>@group.Count(a => a.IsPresent)</td>
+                                            <td>@group.Count(a => !a.IsPresent)</td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="empty-state">
+                            <div class="empty-icon">
+                                <i class="fas fa-calendar-check"></i>
+                            </div>
+                            <h4>No Attendance Records</h4>
+                            <p>Start by registering attendance for this course.</p>
+                        </div>
+                    }
+
+                    @if (Model.CurrentUserRole == "Admin" || Model.CurrentUserRole == "Teacher")
+                    {
+                        <button type="button" class="btn btn-primary mt-3" data-bs-toggle="modal" data-bs-target="#attendanceModal">
+                            <i class="fas fa-plus me-2"></i>Register Attendance
+                        </button>
+                    }
+                </div>
+                <div class="card-footer bg-transparent border-0">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <a asp-action="Index" asp-controller="Courses" class="btn btn-outline-secondary">
+                            <i class="fas fa-arrow-left me-1"></i>Back to Courses
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- attendance modal -->
+@if (Model.CurrentUserRole == "Admin" || Model.CurrentUserRole == "Teacher")
+{
+    <div class="modal fade" id="attendanceModal" tabindex="-1" aria-labelledby="attendanceModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="attendanceModalLabel">
+                        <i class="fas fa-calendar-check me-2"></i>Register Attendance
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form asp-action="RegisterAttendance" asp-controller="Courses" method="post">
+                    <input type="hidden" name="CourseId" value="@Model.Course.Id" />
+                    <div class="modal-body">
+                        <div class="form-floating mb-3">
+                            <input type="date"
+                                   class="form-control"
+                                   id="attendanceDate"
+                                   name="Date"
+                                   value="@DateTime.Now.ToString("yyyy-MM-dd")"
+                                   required />
+                            <label for="attendanceDate">
+                                <i class="fas fa-calendar me-2"></i>Date
+                            </label>
+                        </div>
+
+                        <div class="table-responsive">
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>Student</th>
+                                        <th class="text-center">Present</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var enrollment in Model.Enrollments)
+                                    {
+                                        <tr>
+                                            <td>@enrollment.Student.FirstName @enrollment.Student.LastName</td>
+                                            <td class="text-center">
+                                                <div class="form-check">
+                                                    <input class="form-check-input" type="checkbox" name="StudentPresence[@enrollment.StudentId]" id="presence_@enrollment.StudentId" checked />
+                                                    <label class="form-check-label" for="presence_@enrollment.StudentId"></label>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                            <i class="fas fa-times me-2"></i>Cancel
+                        </button>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save me-2"></i>Save Attendance
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+}
+
+<!-- grade modal -->
+@if (Model.CurrentUserRole == "Teacher" || Model.CurrentUserRole == "Admin")
+{
+    <div class="modal fade" id="gradeModal" tabindex="-1" aria-labelledby="gradeModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="gradeModalLabel">
+                        <i class="fas fa-star me-2"></i>Grade Student
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form id="gradeForm" asp-action="AddGrade" asp-controller="Courses" method="post">
+                    <input type="hidden" name="courseId" value="@Model.Course.Id" />
+                    <input type="hidden" name="studentId" id="gradeStudentId" />
+                    <div class="modal-body">
+                        <div class="alert alert-info">
+                            Grading <strong id="gradeStudentName"></strong> for <strong>@Model.Course.Name</strong>
+                        </div>
+                        <div class="form-floating">
+                            <input type="number" class="form-control" id="grade" name="grade" min="0" max="100" required />
+                            <label for="grade">
+                                <i class="fas fa-star me-2"></i>Grade (0-100)
+                            </label>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                            <i class="fas fa-times me-2"></i>Cancel
+                        </button>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save me-2"></i>Save Grade
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- comment modal -->
+    <div class="modal fade" id="commentModal" tabindex="-1" aria-labelledby="commentModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="commentModalLabel">
+                        <i class="fas fa-comment me-2"></i>Add Comment
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form id="commentForm" asp-action="UpdateComment" asp-controller="Courses" method="post">
+                    <input type="hidden" name="courseId" value="@Model.Course.Id" />
+                    <input type="hidden" name="studentId" id="commentStudentId" />
+                    <div class="modal-body">
+                        <div class="alert alert-info">
+                            Commenting for <strong id="commentStudentName"></strong> in <strong>@Model.Course.Name</strong>
+                        </div>
+                        <div class="form-floating">
+                            <textarea class="form-control" id="comment" name="comment" style="height: 100px;"></textarea>
+                            <label for="comment">
+                                <i class="fas fa-comment me-2"></i>Teacher Comment
+                            </label>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                            <i class="fas fa-times me-2"></i>Cancel
+                        </button>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save me-2"></i>Save Comment
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- removing student-->
+    @if (Model.CurrentUserRole == "Admin")
+    {
+        <div class="modal fade" id="removeStudentModal" tabindex="-1" aria-labelledby="removeStudentModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title text-danger" id="removeStudentModalLabel">
+                            <i class="fas fa-exclamation-triangle me-2"></i>Confirm Removal
+                        </h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="alert alert-warning">
+                            <i class="fas fa-exclamation-triangle me-2"></i>
+                            <strong>Warning!</strong> This action cannot be undone.
+                        </div>
+                        <p>Are you sure you want to remove <strong id="removeStudentName"></strong> from <strong>@Model.Course.Name</strong>?</p>
+                        <p class="text-muted">This will remove the student's enrollment, including grades and comments.</p>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                            <i class="fas fa-times me-2"></i>Cancel
+                        </button>
+                        <form id="removeStudentForm" method="post" style="display: inline;">
+                            <button type="submit" class="btn btn-danger">
+                                <i class="fas fa-trash me-2"></i>Remove Student
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+}
+<style>
+
+    </style>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const gradeButtons = document.querySelectorAll('.grade-btn');
+            const gradeModal = document.getElementById('gradeModal');
+            const gradeForm = document.getElementById('gradeForm');
+            const gradeStudentId = document.getElementById('gradeStudentId');
+            const gradeStudentName = document.getElementById('gradeStudentName');
+            const gradeInput = document.getElementById('grade');
+
+            if (gradeButtons.length > 0) {
+                gradeButtons.forEach(button => {
+                    button.addEventListener('click', function() {
+                        const studentId = this.getAttribute('data-student-id');
+                        const studentName = this.getAttribute('data-student-name');
+                        const currentGrade = this.getAttribute('data-current-grade');
+
+                        gradeStudentId.value = studentId;
+                        gradeStudentName.textContent = studentName;
+                        gradeInput.value = currentGrade || '';
+                    });
+                });
+            }
+
+            const commentButtons = document.querySelectorAll('.comment-btn');
+            const commentModal = document.getElementById('commentModal');
+            const commentForm = document.getElementById('commentForm');
+            const commentStudentId = document.getElementById('commentStudentId');
+            const commentStudentName = document.getElementById('commentStudentName');
+            const commentInput = document.getElementById('comment');
+
+            if (commentButtons.length > 0) {
+                commentButtons.forEach(button => {
+                    button.addEventListener('click', function() {
+                        const studentId = this.getAttribute('data-student-id');
+                        const studentName = this.getAttribute('data-student-name');
+                        const currentComment = this.getAttribute('data-current-comment');
+
+                        commentStudentId.value = studentId;
+                        commentStudentName.textContent = studentName;
+                        commentInput.value = currentComment || '';
+                    });
+                });
+            }
+
+            const removeButtons = document.querySelectorAll('.remove-btn');
+            const removeModal = document.getElementById('removeStudentModal');
+            const removeForm = document.getElementById('removeStudentForm');
+            const removeStudentName = document.getElementById('removeStudentName');
+
+            if (removeButtons.length > 0) {
+                removeButtons.forEach(button => {
+                    button.addEventListener('click', function() {
+                        const studentId = this.getAttribute('data-student-id');
+                        const studentName = this.getAttribute('data-student-name');
+
+                        removeStudentName.textContent = studentName;
+                        removeForm.action = `/Courses/RemoveStudent/@Model.Course.Id/${studentId}`;
+                    });
+                });
+            }
+        });
+    </script>
+}

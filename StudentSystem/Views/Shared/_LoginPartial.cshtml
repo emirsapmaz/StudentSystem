@@ -1,0 +1,56 @@
+﻿@using Microsoft.AspNetCore.Identity
+@using StudentSystem.Models
+@inject SignInManager<user> SignInManager
+@inject UserManager<user> UserManager
+
+@if (SignInManager.IsSignedIn(User))
+{
+    var currentUser = await UserManager.GetUserAsync(User);
+    <div class="user-info">
+        <div class="dropdown">
+            <button class="btn btn-link dropdown-toggle d-flex align-items-center text-decoration-none"
+                    type="button" id="userDropdown" data-bs-toggle="dropdown">
+                <div class="user-avatar me-2">
+                    @(currentUser.FirstName.Substring(0, 1).ToUpper())@(currentUser.LastName.Substring(0, 1).ToUpper())
+                </div>
+                <div class="user-details d-none d-md-block text-start">
+                    <div class="user-name text-dark fw-semibold">@currentUser.FirstName @currentUser.LastName</div>
+                    <div class="user-role text-muted small">@currentUser.roles</div>
+                </div>
+            </button>
+            <ul class="dropdown-menu dropdown-menu-end">
+                <li>
+                    <div class="dropdown-header">
+                        <div class="fw-semibold">@currentUser.FirstName @currentUser.LastName</div>
+                        <div class="text-muted small">@currentUser.Email</div>
+                    </div>
+                </li>
+                <li><hr class="dropdown-divider"></li>
+                <li>
+                    <a class="dropdown-item" href="@Url.Action("Profile", "Account")">
+                        <i class="fas fa-user me-2"></i>My Profile
+                    </a>
+                </li>
+                <li><hr class="dropdown-divider"></li>
+                <li>
+                    <form class="d-inline" asp-area="" asp-controller="Account" asp-action="Logout" method="post">
+                        <button type="submit" class="dropdown-item text-danger">
+                            <i class="fas fa-sign-out-alt me-2"></i>Logout
+                        </button>
+                    </form>
+                </li>
+            </ul>
+        </div>
+    </div>
+}
+else
+{
+    <div class="navbar-nav">
+        <a class="nav-link" href="@Url.Action("Login", "Account")">
+            <i class="fas fa-sign-in-alt me-2"></i>Login
+        </a>
+        <a class="nav-link" href="@Url.Action("Register", "Account")">
+            <i class="fas fa-user-plus me-2"></i>Register
+        </a>
+    </div>
+}

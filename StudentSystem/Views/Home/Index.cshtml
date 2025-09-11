@@ -1,0 +1,418 @@
+﻿@model StudentSystem.ViewModels.DashboardViewModel
+@{
+    ViewData["Title"] = "Dashboard";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="dashboard-container">
+    <div class="dashboard-header">
+        <div class="row align-items-center">
+            <div class="col">
+                <h1 class="dashboard-title">
+                    <i class="fas fa-tachometer-alt me-3"></i>
+                    Dashboard
+                </h1>
+                <p class="dashboard-subtitle">Welcome back, @Model.User.FirstName @Model.User.LastName</p>
+            </div>
+            <div class="col-auto">
+                <div class="user-badge">
+                    <span class="badge bg-@(Model.UserRole.ToLower() == "admin" ? "danger" : Model.UserRole.ToLower() == "teacher" ? "success" : "info") user-role-badge">
+                        <i class="fas fa-@(Model.UserRole.ToLower() == "admin" ? "crown" : Model.UserRole.ToLower() == "teacher" ? "chalkboard-teacher" : "user-graduate") me-2"></i>
+                        @Model.UserRole
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    @if (Model.UserRole.ToLower() == "admin")
+    {
+        <!-- admin dashboard -->
+        <div class="stats-grid">
+            <div class="row g-4">
+                <div class="col-xl-3 col-md-6">
+                    <div class="stat-card stat-card-primary">
+                        <div class="stat-icon">
+                            <i class="fas fa-users"></i>
+                        </div>
+                        <div class="stat-content">
+                            <h3 class="stat-number">@Model.AdminStats.TotalUsers</h3>
+                            <p class="stat-label">Total Users</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-xl-3 col-md-6">
+                    <div class="stat-card stat-card-success">
+                        <div class="stat-icon">
+                            <i class="fas fa-chalkboard-teacher"></i>
+                        </div>
+                        <div class="stat-content">
+                            <h3 class="stat-number">@Model.AdminStats.TotalTeachers</h3>
+                            <p class="stat-label">Teachers</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-xl-3 col-md-6">
+                    <div class="stat-card stat-card-info">
+                        <div class="stat-icon">
+                            <i class="fas fa-user-graduate"></i>
+                        </div>
+                        <div class="stat-content">
+                            <h3 class="stat-number">@Model.AdminStats.TotalStudents</h3>
+                            <p class="stat-label">Students</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-xl-3 col-md-6">
+                    <div class="stat-card stat-card-warning">
+                        <div class="stat-icon">
+                            <i class="fas fa-book"></i>
+                        </div>
+                        <div class="stat-content">
+                            <h3 class="stat-number">@Model.AdminStats.TotalCourses</h3>
+                            <p class="stat-label">Total Courses</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row g-4 mt-4">
+            <div class="col-lg-8">
+                <div class="dashboard-card">
+                    <div class="card-header">
+                        <h5 class="card-title">
+                            <i class="fas fa-chart-line me-2"></i>
+                            System Overview
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <div class="overview-item">
+                                    <div class="overview-icon bg-success">
+                                        <i class="fas fa-play"></i>
+                                    </div>
+                                    <div class="overview-content">
+                                        <h6>Active Courses</h6>
+                                        <span class="overview-number">@Model.AdminStats.ActiveCourses</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="overview-item">
+                                    <div class="overview-icon bg-info">
+                                        <i class="fas fa-user-plus"></i>
+                                    </div>
+                                    <div class="overview-content">
+                                        <h6>Total Enrollments</h6>
+                                        <span class="overview-number">@Model.AdminStats.TotalEnrollments</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="overview-item">
+                                    <div class="overview-icon bg-warning">
+                                        <i class="fas fa-star"></i>
+                                    </div>
+                                    <div class="overview-content">
+                                        <h6>Average Grade</h6>
+                                        <span class="overview-number">@Model.AdminStats.AverageGrade.ToString("F1")</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-4">
+                <div class="dashboard-card">
+                    <div class="card-header">
+                        <h5 class="card-title">
+                            <i class="fas fa-clock me-2"></i>
+                            Recent Enrollments
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        @if (Model.AdminStats.RecentEnrollments.Any())
+                        {
+                            @foreach (var enrollment in Model.AdminStats.RecentEnrollments)
+                            {
+                                <div class="recent-item">
+                                    <div class="recent-avatar">
+                                        <i class="fas fa-user-graduate"></i>
+                                    </div>
+                                    <div class="recent-content">
+                                        <h6>@enrollment.Student.FirstName @enrollment.Student.LastName</h6>
+                                        <p>@enrollment.Course.Name</p>
+                                    </div>
+                                </div>
+                            }
+                        }
+                        else
+                        {
+                            <p class="text-muted">No recent enrollments</p>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+    else if (Model.UserRole.ToLower() == "teacher")
+    {
+        <!-- teacher dashboard -->
+        <div class="stats-grid">
+            <div class="row g-4">
+                <div class="col-xl-3 col-md-6">
+                    <div class="stat-card stat-card-primary">
+                        <div class="stat-icon">
+                            <i class="fas fa-book"></i>
+                        </div>
+                        <div class="stat-content">
+                            <h3 class="stat-number">@Model.TeacherStats.TotalCourses</h3>
+                            <p class="stat-label">My Courses</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-xl-3 col-md-6">
+                    <div class="stat-card stat-card-success">
+                        <div class="stat-icon">
+                            <i class="fas fa-play"></i>
+                        </div>
+                        <div class="stat-content">
+                            <h3 class="stat-number">@Model.TeacherStats.ActiveCourses</h3>
+                            <p class="stat-label">Active Courses</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-xl-3 col-md-6">
+                    <div class="stat-card stat-card-info">
+                        <div class="stat-icon">
+                            <i class="fas fa-users"></i>
+                        </div>
+                        <div class="stat-content">
+                            <h3 class="stat-number">@Model.TeacherStats.TotalStudents</h3>
+                            <p class="stat-label">Total Students</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-xl-3 col-md-6">
+                    <div class="stat-card stat-card-warning">
+                        <div class="stat-icon">
+                            <i class="fas fa-star"></i>
+                        </div>
+                        <div class="stat-content">
+                            <h3 class="stat-number">@Model.TeacherStats.AverageGrade.ToString("F1")</h3>
+                            <p class="stat-label">Average Grade</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row g-4 mt-4">
+            <div class="col-lg-8">
+                <div class="dashboard-card">
+                    <div class="card-header">
+                        <h5 class="card-title">
+                            <i class="fas fa-chalkboard me-2"></i>
+                            My Courses
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        @if (Model.TeacherStats.Courses.Any())
+                        {
+                            @foreach (var course in Model.TeacherStats.Courses)
+                            {
+                                <div class="course-item">
+                                    <div class="course-info">
+                                        <h6>@course.Name</h6>
+                                        <p class="text-muted">@course.Description</p>
+                                        <span class="badge bg-@(course.Status == Enums.Status.Started ? "success" : course.Status == Enums.Status.Waiting ? "warning" : "secondary")">
+                                            @course.Status
+                                        </span>
+                                    </div>
+                                    <div class="course-stats">
+                                        <span class="student-count">
+                                            <i class="fas fa-users me-1"></i>
+                                            @course.Enrollments.Count students
+                                        </span>
+                                    </div>
+                                </div>
+                            }
+                        }
+                        else
+                        {
+                            <p class="text-muted">No courses assigned</p>
+                        }
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-4">
+                <div class="dashboard-card">
+                    <div class="card-header">
+                        <h5 class="card-title">
+                            <i class="fas fa-clipboard-list me-2"></i>
+                            Recent Grades
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        @if (Model.TeacherStats.RecentGrades.Any())
+                        {
+                            @foreach (var grade in Model.TeacherStats.RecentGrades)
+                            {
+                                <div class="grade-item">
+                                    <div class="grade-info">
+                                        <h6>@grade.Student.FirstName @grade.Student.LastName</h6>
+                                        <p class="text-muted">@grade.Course.Name</p>
+                                    </div>
+                                    <div class="grade-score">
+                                        <span class="badge bg-@(grade.Grade >= 90 ? "success" : grade.Grade >= 70 ? "warning" : "danger")">
+                                            @grade.Grade
+                                        </span>
+                                    </div>
+                                </div>
+                            }
+                        }
+                        else
+                        {
+                            <p class="text-muted">No grades recorded</p>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+    else if (Model.UserRole.ToLower() == "student")
+    {
+        <!-- student dashboard -->
+        <div class="stats-grid">
+            <div class="row g-4">
+                <div class="col-xl-3 col-md-6">
+                    <div class="stat-card stat-card-primary">
+                        <div class="stat-icon">
+                            <i class="fas fa-book-open"></i>
+                        </div>
+                        <div class="stat-content">
+                            <h3 class="stat-number">@Model.StudentStats.TotalCourses</h3>
+                            <p class="stat-label">Enrolled Courses</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-xl-3 col-md-6">
+                    <div class="stat-card stat-card-success">
+                        <div class="stat-icon">
+                            <i class="fas fa-check-circle"></i>
+                        </div>
+                        <div class="stat-content">
+                            <h3 class="stat-number">@Model.StudentStats.CompletedCourses</h3>
+                            <p class="stat-label">Completed</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-xl-3 col-md-6">
+                    <div class="stat-card stat-card-warning">
+                        <div class="stat-icon">
+                            <i class="fas fa-star"></i>
+                        </div>
+                        <div class="stat-content">
+                            <h3 class="stat-number">@Model.StudentStats.AverageGrade.ToString("F1")</h3>
+                            <p class="stat-label">Average Grade</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-xl-3 col-md-6">
+                    <div class="stat-card stat-card-info">
+                        <div class="stat-icon">
+                            <i class="fas fa-calendar-check"></i>
+                        </div>
+                        <div class="stat-content">
+                            <h3 class="stat-number">@Model.StudentStats.AttendancePercentage.ToString("F0")%</h3>
+                            <p class="stat-label">Attendance</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row g-4 mt-4">
+            <div class="col-lg-8">
+                <div class="dashboard-card">
+                    <div class="card-header">
+                        <h5 class="card-title">
+                            <i class="fas fa-graduation-cap me-2"></i>
+                            My Courses
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        @if (Model.StudentStats.Enrollments.Any())
+                        {
+                            @foreach (var enrollment in Model.StudentStats.Enrollments)
+                            {
+                                <div class="enrollment-item">
+                                    <div class="enrollment-info">
+                                        <h6>@enrollment.Course.Name</h6>
+                                        <p class="text-muted">Teacher: @enrollment.Course.Teacher.FirstName @enrollment.Course.Teacher.LastName</p>
+                                        <span class="badge bg-@(enrollment.Course.Status == Enums.Status.Started ? "success" : enrollment.Course.Status == Enums.Status.Waiting ? "warning" : "secondary")">
+                                            @enrollment.Course.Status
+                                        </span>
+                                    </div>
+                                    <div class="enrollment-grade">
+                                        @if (enrollment.Grade.HasValue)
+                                        {
+                                            <span class="badge bg-@(enrollment.Grade >= 90 ? "success" : enrollment.Grade >= 70 ? "warning" : "danger") grade-badge">
+                                                @enrollment.Grade
+                                            </span>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge bg-secondary">Not Graded</span>
+                                        }
+                                    </div>
+                                </div>
+                            }
+                        }
+                        else
+                        {
+                            <p class="text-muted">No courses enrolled</p>
+                        }
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-4">
+                <div class="dashboard-card">
+                    <div class="card-header">
+                        <h5 class="card-title">
+                            <i class="fas fa-calendar-alt me-2"></i>
+                            Recent Attendance
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        @if (Model.StudentStats.RecentAttendance.Any())
+                        {
+                            @foreach (var attendance in Model.StudentStats.RecentAttendance)
+                            {
+                                <div class="attendance-item">
+                                    <div class="attendance-date">
+                                        <i class="fas fa-calendar me-2"></i>
+                                        @attendance.Date.ToString("MMM dd")
+                                    </div>
+                                    <div class="attendance-status">
+                                        <span class="badge bg-@(attendance.IsPresent ? "success" : "danger")">
+                                            @(attendance.IsPresent ? "Present" : "Absent")
+                                        </span>
+                                    </div>
+                                </div>
+                            }
+                        }
+                        else
+                        {
+                            <p class="text-muted">No attendance records</p>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+

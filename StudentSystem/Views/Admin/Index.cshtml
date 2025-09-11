@@ -1,0 +1,399 @@
+﻿@model StudentSystem.ViewModels.AdminIndexViewModel
+@{
+    ViewData["Title"] = "User Management";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="admin-container">
+    <div class="admin-header">
+        <div class="row align-items-center">
+            <div class="col">
+                <h1 class="admin-title">
+                    <i class="fas fa-users-cog me-3"></i>
+                    User Management
+                </h1>
+                <p class="admin-subtitle">Manage system users, roles, and permissions</p>
+            </div>
+            <div class="col-auto">
+                <button type="button" class="btn btn-secondary create-btn" data-bs-toggle="modal" data-bs-target="#createUserModal">
+                    <i class="fas fa-user-plus me-2"></i>Create New User
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div class="users-card">
+        <div class="card-header">
+            <div class="row align-items-center">
+                <div class="col">
+                    <h5 class="card-title">
+                        <i class="fas fa-list me-2"></i>
+                        All Users
+                    </h5>
+                </div>
+                <div class="col-auto">
+                    <div class="search-box">
+                        <i class="fas fa-search"></i>
+                        <input type="text" class="form-control" id="userSearch" placeholder="Search users...">
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="card-body">
+            @if (TempData["Success"] != null)
+            {
+                <div class="alert alert-success alert-dismissible fade show" role="alert">
+                    @TempData["Success"]
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            }
+            @if (TempData["Error"] != null)
+            {
+                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                    @TempData["Error"]
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            }
+            @if (Model.Users.Any())
+            {
+                <div class="table-responsive">
+                    <table class="table users-table">
+                        <thead>
+                            <tr>
+                                <th>
+                                    <i class="fas fa-user me-2"></i>Name
+                                </th>
+                                <th>
+                                    <i class="fas fa-envelope me-2"></i>Email
+                                </th>
+                                <th>
+                                    <i class="fas fa-user-tag me-2"></i>Role
+                                </th>
+                                <th>
+                                    <i class="fas fa-venus-mars me-2"></i>Gender
+                                </th>
+                                <th>
+                                    <i class="fas fa-chalkboard-teacher me-2"></i>Subject
+                                </th>
+                                <th class="text-center">
+                                    <i class="fas fa-cogs me-2"></i>Actions
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var user in Model.Users)
+                            {
+                                <tr class="user-row" data-user-id="@user.Id">
+                                    <td>
+                                        <div class="user-info">
+                                            <div class="user-avatar">
+                                                @(user.FirstName.Substring(0, 1).ToUpper())@(user.LastName.Substring(0, 1).ToUpper())
+                                            </div>
+                                            <div class="user-details">
+                                                <div class="user-name">@user.FirstName @user.LastName</div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <span class="user-email">@user.Email</span>
+                                    </td>
+                                    <td>
+                                        <span class="badge role-badge bg-@(user.roles.ToLower() == "admin" ? "danger" : user.roles.ToLower() == "teacher" ? "success" : "info")">
+                                            <i class="fas fa-@(user.roles.ToLower() == "admin" ? "crown" : user.roles.ToLower() == "teacher" ? "chalkboard-teacher" : "user-graduate") me-1"></i>
+                                            @user.roles
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <span class="gender-badge">
+                                            @if (!string.IsNullOrEmpty(user.gender))
+                                            {
+                                                <i class="fas fa-@(user.gender.ToLower() == "male" ? "mars" : "venus") me-1"></i>
+                                                @user.gender
+                                            }
+                                            else
+                                            {
+                                                <span class="text-muted">-</span>
+                                            }
+                                        </span>
+                                    </td>
+                                    <td>
+                                        @if (!string.IsNullOrEmpty(user.TeacherSubject))
+                                        {
+                                            <span class="subject-badge">
+                                                <i class="fas fa-book me-1"></i>
+                                                @user.TeacherSubject
+                                            </span>
+                                        }
+                                        else
+                                        {
+                                            <span class="text-muted">-</span>
+                                        }
+                                    </td>
+                                    <td class="text-center">
+                                        <div class="action-buttons">
+                                            <a asp-action="Edit" asp-route-id="@user.Id" class="btn btn-sm btn-outline-primary">
+                                                <i class="fas fa-edit"></i>
+                                            </a>
+                                            @if (user.Email != "admin@pusula.com")
+                                            {
+                                                <button type="button" class="btn btn-sm btn-outline-danger delete-btn"
+                                                        data-user-id="@user.Id"
+                                                        data-user-name="@user.FirstName @user.LastName"
+                                                        data-bs-toggle="modal"
+                                                        data-bs-target="#deleteUserModal">
+                                                    <i class="fas fa-trash"></i>
+                                                </button>
+                                            }
+                                            else
+                                            {
+                                                <span class="text-muted">
+                                                    <i class="fas fa-shield-alt" title="Protected Account"></i>
+                                                </span>
+                                            }
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+            else
+            {
+                <div class="empty-state">
+                    <div class="empty-icon">
+                        <i class="fas fa-users"></i>
+                    </div>
+                    <h4>No Users Found</h4>
+                    <p>Start by creating your first user account.</p>
+                    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#createUserModal">
+                        <i class="fas fa-user-plus me-2"></i>Create First User
+                    </button>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+<!--create user modal-->
+<div class="modal fade" id="createUserModal" tabindex="-1" aria-labelledby="createUserModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="createUserModalLabel">
+                    <i class="fas fa-user-plus me-2"></i>Create New User
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form id="createUserForm" asp-action="Create" asp-controller="Admin" method="post">
+                @if (!ViewData.ModelState.IsValid)
+                {
+                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                        @foreach (var error in ViewData.ModelState.Values.SelectMany(v => v.Errors))
+                        {
+                            <p>@error.ErrorMessage</p>
+                        }
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                }
+                <div class="modal-body">
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <div class="form-floating">
+                                <input asp-for="CreateUser.FirstName" class="form-control" id="firstName" placeholder="First Name" required />
+                                <label for="firstName">
+                                    <i class="fas fa-user me-2"></i>First Name
+                                </label>
+                                <span asp-validation-for="CreateUser.FirstName" class="text-danger"></span>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-floating">
+                                <input asp-for="CreateUser.LastName" class="form-control" id="lastName" placeholder="Last Name" required />
+                                <label for="lastName">
+                                    <i class="fas fa-user me-2"></i>Last Name
+                                </label>
+                                <span asp-validation-for="CreateUser.LastName" class="text-danger"></span>
+                            </div>
+                        </div>
+                        <div class="col-12">
+                            <div class="form-floating">
+                                <input asp-for="CreateUser.Email" class="form-control" id="email" placeholder="Email" required />
+                                <label for="email">
+                                    <i class="fas fa-envelope me-2"></i>Email Address
+                                </label>
+                                <span asp-validation-for="CreateUser.Email" class="text-danger"></span>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-floating">
+                                <select asp-for="CreateUser.Role" class="form-select" id="role" required onchange="toggleTeacherSubject()">
+                                    <option value="">Select Role</option>
+                                    <option value="Admin">Admin</option>
+                                    <option value="Teacher">Teacher</option>
+                                    <option value="Student">Student</option>
+                                </select>
+                                <label for="role">
+                                    <i class="fas fa-user-tag me-2"></i>Role
+                                </label>
+                                <span asp-validation-for="CreateUser.Role" class="text-danger"></span>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-floating">
+                                <select asp-for="CreateUser.Gender" class="form-select" id="gender">
+                                    <option value="">Select Gender</option>
+                                    <option value="Male">Male</option>
+                                    <option value="Female">Female</option>
+                                </select>
+                                <label for="gender">
+                                    <i class="fas fa-venus-mars me-2"></i>Gender
+                                </label>
+                                <span asp-validation-for="CreateUser.Gender" class="text-danger"></span>
+                            </div>
+                        </div>
+                        <div class="col-12" id="teacherSubjectField" style="display: none;">
+                            <div class="form-floating">
+                                <input asp-for="CreateUser.TeacherSubject" class="form-control" id="teacherSubject" placeholder="Subject" />
+                                <label for="teacherSubject">
+                                    <i class="fas fa-chalkboard-teacher me-2"></i>Teaching Subject
+                                </label>
+                                <span asp-validation-for="CreateUser.TeacherSubject" class="text-danger"></span>
+                            </div>
+                        </div>
+                        <div class="col-12">
+                            <div class="form-floating">
+                                <input asp-for="CreateUser.Password" type="password" class="form-control" id="password" placeholder="Password" required />
+                                <label for="password">
+                                    <i class="fas fa-lock me-2"></i>Password
+                                </label>
+                                <button type="button" class="password-toggle" onclick="togglePassword('password')">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                                <span asp-validation-for="CreateUser.Password" class="text-danger"></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                        <i class="fas fa-times me-2"></i>Cancel
+                    </button>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-user-plus me-2"></i>Create User
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- delete user modal -->
+<div class="modal fade" id="deleteUserModal" tabindex="-1" aria-labelledby="deleteUserModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title text-danger" id="deleteUserModalLabel">
+                    <i class="fas fa-exclamation-triangle me-2"></i>Confirm Deletion
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="alert alert-warning">
+                    <i class="fas fa-exclamation-triangle me-2"></i>
+                    <strong>Warning!</strong> This action cannot be undone.
+                </div>
+                <p>Are you sure you want to delete the user <strong id="deleteUserName"></strong>?</p>
+                <p class="text-muted">This will permanently remove the user and all associated data.</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                    <i class="fas fa-times me-2"></i>Cancel
+                </button>
+                <form id="deleteUserForm" method="post" style="display: inline;">
+                    <button type="submit" class="btn btn-danger">
+                        <i class="fas fa-trash me-2"></i>Delete User
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+
+</style>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        function toggleTeacherSubject() {
+            const roleSelect = document.getElementById('role');
+            const subjectField = document.getElementById('teacherSubjectField');
+            const subjectInput = document.getElementById('teacherSubject');
+
+            if (roleSelect.value === 'Teacher') {
+                subjectField.style.display = 'block';
+                subjectInput.required = true;
+            } else {
+                subjectField.style.display = 'none';
+                subjectInput.required = false;
+                subjectInput.value = '';
+            }
+        }
+
+        function togglePassword(fieldId) {
+            const field = document.getElementById(fieldId);
+            const toggle = field.nextElementSibling.querySelector('i');
+
+            if (field.type === 'password') {
+                field.type = 'text';
+                toggle.classList.remove('fa-eye');
+                toggle.classList.add('fa-eye-slash');
+            } else {
+                field.type = 'password';
+                toggle.classList.remove('fa-eye-slash');
+                toggle.classList.add('fa-eye');
+            }
+        }
+
+        // filtering for usernames
+        document.getElementById('userSearch').addEventListener('input', function() {
+            const searchTerm = this.value.toLowerCase();
+            const rows = document.querySelectorAll('.user-row');
+
+            rows.forEach(row => {
+                const text = row.textContent.toLowerCase();
+                if (text.includes(searchTerm)) {
+                    row.style.display = '';
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+        });
+
+        document.addEventListener('DOMContentLoaded', function() {
+
+            var showModal = @Model.ShowCreateModal.ToString().ToLower();
+            if (showModal) {
+                var createModal = new bootstrap.Modal(document.getElementById('createUserModal'));
+                createModal.show();
+            }
+
+            const deleteButtons = document.querySelectorAll('.delete-btn');
+            const deleteModal = document.getElementById('deleteUserModal');
+            const deleteForm = document.getElementById('deleteUserForm');
+            const deleteUserName = document.getElementById('deleteUserName');
+
+            deleteButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    const userId = this.getAttribute('data-user-id');
+                    const userName = this.getAttribute('data-user-name');
+
+                    deleteUserName.textContent = userName;
+                    deleteForm.action = `/Admin/Delete/${userId}`;
+                });
+            });
+        });
+    </script>
+}

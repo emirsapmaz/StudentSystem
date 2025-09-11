@@ -1,0 +1,245 @@
+﻿@model StudentSystem.ViewModels.UserViewModel
+@{
+    ViewData["Title"] = "My Profile";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4 border">
+                <div>
+                    <h1 class="h3 mb-0">
+                        <i class="fas fa-user me-2" style="color:white"></i><span style="color:white">My Profile</span>
+                    </h1>
+                    <p class="text-muted" style="color:white!important">View your account information</p>
+                </div>
+                <div class="badge role-badge bg-@(Model.Role.ToLower() == "admin" ? "danger" : Model.Role.ToLower() == "teacher" ? "success" : "info")">
+                    <i class="fas fa-@(Model.Role.ToLower() == "admin" ? "crown" : Model.Role.ToLower() == "teacher" ? "chalkboard-teacher" : "user-graduate") me-1"></i>
+                    @Model.Role
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body">
+                    <div class="row">
+                        <!-- Profile Avatar Section -->
+                        <div class="col-md-4 text-center mb-4 mb-md-0">
+                            <div class="avatar-circle mx-auto d-flex align-items-center justify-content-center mb-3">
+                                <i class="fas fa-user text-white" style="font-size: 3rem;"></i>
+                            </div>
+                            <h4 class="user-name mb-1">@Model.FirstName @Model.LastName</h4>
+                        </div>
+
+                        <!-- Profile Information Section -->
+                        <div class="col-md-8">
+                            <h5 class="mb-3">
+                                <i class="fas fa-info-circle me-2"></i>Personal Information
+                            </h5>
+                            <div class="row g-3">
+                                <div class="col-sm-6">
+                                    <div class="form-group">
+                                        <label class="form-label text-muted small">First Name</label>
+                                        <div class="form-control-plaintext bg-light rounded p-2">
+                                            @Model.FirstName
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-sm-6">
+                                    <div class="form-group">
+                                        <label class="form-label text-muted small">Last Name</label>
+                                        <div class="form-control-plaintext bg-light rounded p-2">
+                                            @Model.LastName
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-sm-6">
+                                    <div class="form-group">
+                                        <label class="form-label text-muted small">Email Address</label>
+                                        <div class="form-control-plaintext bg-light rounded p-2">
+                                            <i class="fas fa-envelope text-muted me-2"></i>
+                                            @Model.Email
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-sm-6">
+                                    <div class="form-group">
+                                        <label class="form-label text-muted small">Role</label>
+                                        <div class="form-control-plaintext bg-light rounded p-2">
+                                            <i class="fas fa-user-tag text-muted me-2"></i>
+                                            <span class="badge role-badge bg-@(Model.Role.ToLower() == "admin" ? "danger" : Model.Role.ToLower() == "teacher" ? "success" : "info")">
+                                                @Model.Role
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                                @if (!string.IsNullOrEmpty(Model.Gender))
+                                {
+                                    <div class="col-sm-6">
+                                        <div class="form-group">
+                                            <label class="form-label text-muted small">Gender</label>
+                                            <div class="form-control-plaintext bg-light rounded p-2">
+                                                <i class="fas fa-@(Model.Gender.ToLower() == "male" ? "mars" : "venus") text-muted me-2"></i>
+                                                @Model.Gender
+                                            </div>
+                                        </div>
+                                    </div>
+                                }
+                                @if (!string.IsNullOrEmpty(Model.TeacherSubject))
+                                {
+                                    <div class="col-sm-6">
+                                        <div class="form-group">
+                                            <label class="form-label text-muted small">Teaching Subject</label>
+                                            <div class="form-control-plaintext bg-light rounded p-2">
+                                                <i class="fas fa-book text-muted me-2"></i>
+                                                @Model.TeacherSubject
+                                            </div>
+                                        </div>
+                                    </div>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-footer bg-transparent border-0">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <a asp-action="Index" asp-controller="Home" class="btn btn-primary">
+                            <i class="fas fa-arrow-left me-1"></i>Back to Dashboard
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .container-fluid {
+        padding: 2rem 0;
+    }
+
+    .card {
+        background: white;
+        border-radius: var(--border-radius);
+        box-shadow: var(--box-shadow);
+        border: none;
+    }
+
+    .card-body {
+        padding: 1.5rem;
+    }
+
+    .card-footer {
+        padding: 1.5rem;
+    }
+
+    .h3 {
+        font-size: 2rem;
+        font-weight: 600;
+        color: var(--gray-800);
+    }
+
+    .text-muted {
+        color: var(--gray-600);
+    }
+
+    .avatar-circle {
+        width: 120px;
+        height: 120px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+    }
+
+    .user-name {
+        font-weight: 600;
+        color: var(--gray-800);
+    }
+
+    .form-group {
+        margin-bottom: 1rem;
+    }
+
+    .form-label {
+        font-size: 0.85rem;
+        font-weight: 500;
+        color: var(--gray-600);
+    }
+
+    .form-control-plaintext {
+        background: var(--gray-100);
+        border: 2px solid var(--gray-200);
+        border-radius: var(--border-radius);
+        padding: 0.75rem;
+        color: var(--gray-600);
+        font-size: 1rem;
+    }
+
+    .role-badge {
+        font-size: 0.85rem;
+        padding: 0.5rem 1rem;
+        border-radius: 50px;
+        font-weight: 600;
+    }
+
+    .btn-primary {
+        background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+        border: none;
+        padding: 0.75rem 2rem;
+        border-radius: var(--border-radius);
+        font-weight: 600;
+        transition: var(--transition);
+    }
+    .border{
+        background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+        border: none;
+        padding: 0.75rem 2rem;
+        border-radius: var(--border-radius);
+        font-weight: 600;
+        transition: var(--transition);
+    }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--box-shadow);
+        }
+
+    .btn-outline-secondary {
+        border: 2px solid var(--gray-200);
+        color: var(--gray-700);
+        padding: 0.75rem 2rem;
+        border-radius: var(--border-radius);
+        font-weight: 600;
+        transition: var(--transition);
+    }
+
+        .btn-outline-secondary:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--box-shadow);
+            background: var(--gray-100);
+        }
+
+    media (max-width: 768px) {
+        .h3
+    {
+        font-size: 1.5rem;
+    }
+
+    .avatar-circle {
+        width: 80px;
+        height: 80px;
+        font-size: 2rem;
+    }
+
+    .card-body {
+        padding: 1rem;
+    }
+
+    .card-footer {
+        padding: 1rem;
+    }
+
+    }</style>
