@@ -1,0 +1,32 @@
+# Visual Studio / ASP.NET / .NET
+.vs/
+bin/
+obj/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+*.vspscc
+*.vssscc
+_ReSharper*/
+*.DotSettings.user
+*.ide
+*.ncrunch*
+*.nupkg
+*.snk
+
+# Rider
+.idea/
+
+# OS generated files
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# Node / NPM (if you use frontend tools)
+node_modules/
+
+# Publish output
+publish/
