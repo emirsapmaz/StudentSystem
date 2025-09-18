@@ -170,16 +170,13 @@ The application uses custom CSS variables in `wwwroot/css/site.css`:
 4. Push to the branch (`git push origin feature/amazing-feature`)
 5. Open a Pull Request
 
-## License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
 ## Screenshots
 
 <img width="2879" height="1509" alt="Ekran görüntüsü 2025-09-11 225322" src="https://github.com/user-attachments/assets/85ca95d9-2c66-438f-b019-2486225cf6cb" />
 <img width="2837" height="1522" alt="Ekran görüntüsü 2025-09-11 225229" src="https://github.com/user-attachments/assets/88a5f386-a086-4dc9-a420-cb87b96486b4" />
 <img width="2839" height="1519" alt="Ekran görüntüsü 2025-09-11 225254" src="https://github.com/user-attachments/assets/2bc3259e-2f65-402e-9037-69329ca0f35c" />
 <img width="2877" height="1523" alt="Ekran görüntüsü 2025-09-11 225311" src="https://github.com/user-attachments/assets/5d92b6b0-c76c-44ff-96d6-647a3f4f111f" />
+
 
 
 
